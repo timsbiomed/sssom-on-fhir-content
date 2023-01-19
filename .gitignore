@@ -1,0 +1,28 @@
+# Boilerplate
+__pycache__/
+_archive/
+_dev/
+.idea/
+build/
+dev/
+dist/
+ignored/
+*~$*
+*.DS_Store
+*.egg-info
+*.swp
+tags
+MANIFEST
+
+# Custom
+/*.json
+*/cache/*
+!*/cache/.keep
+/env/*
+!/env/.env.example
+.ipynb_checkpoints/
+/venv/
+*.ipynb
+.idea/
+.DS_Store
+backup/
