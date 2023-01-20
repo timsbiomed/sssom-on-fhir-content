@@ -1,54 +1,33 @@
 """"Convert from v2 to v3"""
 import os
+from typing import List
 
 import pandas as pd
 
-THIS_DIR = os.path.realpath(__file__)
+THIS_DIR = os.path.dirname(__file__)
 SRC_DIR = os.path.join(THIS_DIR, '..', '..', 'content', 'icd_snomed', 'tsv')
-IN_DIR = os.path.join(SRC_DIR, 'input')
-OUT_DIR = os.path.join(SRC_DIR, 'output')
+IN_DIR = os.path.join(SRC_DIR, 'v1')
+OUT_DIR = os.path.join(SRC_DIR, 'v2')
 
-# Modify original CSVs -------------------------------------------------------------------------------------------------
+# Read and mutate CSVs -------------------------------------------------------------------------------------------------
+datasets = {}
+csv_paths: List[str] = [x for x in os.listdir(IN_DIR) if x.endswith('.csv')]
+for path in csv_paths:
+    _id = path.replace('sssom_mappings_', '').replace('icd10cm.csv', '')
+    df = pd.read_csv(os.path.join(IN_DIR, path), comment='#').fillna('')
+    datasets[_id] = {'inpath': path, 'df': df}
+
 # TODO for all:
 #  - remove column curi_map
 #  - save individaul TSV just in case useful alternative to combined
 #  - add comment w/ sssom metadata (including curie_map)
-df177 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_177icd10cm.csv'), comment='#').fillna('')
+# TODO contingent
+#  - extract second row first col which is curie_map if exists
+for _id, keys in datasets.items():
+    df, inpath = keys['df'], keys['inpath']
+    print()
 
-
-df1411 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1411icd10cm.csv'), comment='#').fillna('')
-
-
-df1507 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1507icd10cm.csv'), comment='#').fillna('')
-
-
-df1578 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1578icd10cm.csv'), comment='#').fillna('')
-
-
-df1678 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1678icd10cm.csv'), comment='#').fillna('')
-
-
-df1688 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1688icd10cm.csv'), comment='#').fillna('')
-
-
-df1726 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1726icd10cm.csv'), comment='#').fillna('')
-
-
-df1726a = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1726icd10cm_a.csv'), comment='#').fillna('')
-
-
-df1726b = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1726icd10cm_b.csv'), comment='#').fillna('')
-
-
-df1793 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1793icd10cm.csv'), comment='#').fillna('')
-
-
-df1798 = pd.read_csv(os.path.join(IN_DIR, 'sssom_mappings_1798icd10cm.csv'), comment='#').fillna('')
-
-
-df1507s = pd.read_csv(os.path.join(IN_DIR, 'sssom_sample_1507icd10cm.csv'), comment='#').fillna('')
-
-
+print()
 # Save new CSVs and metadata yml ---------------------------------------------------------------------------------------
 # TODO: come up w the best metadata yml based on each file and save each file
 
