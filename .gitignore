@@ -23,6 +23,14 @@ MANIFEST
 .ipynb_checkpoints/
 /venv/
 *.ipynb
-.idea/
 .DS_Store
 backup/
+# todo: why several variations of this pattern not working?
+#combined/*.tsv
+#!combined/.keep
+#/*/combined/*.tsv
+#!/*/combined/.keep
+*/combined/*.tsv
+!*/combined/.keep
+combined/sssom_mappings_icd10cm.tsv
+content/icd_snomed/tsv/v3/combined/sssom_mappings_icd10cm.tsv
