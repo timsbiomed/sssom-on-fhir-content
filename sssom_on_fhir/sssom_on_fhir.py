@@ -1,129 +1,67 @@
 """Convert OWL to FHIR"""
 import os
+import subprocess
 from argparse import ArgumentParser
-from collections import OrderedDict
-from typing import Dict, List
+from typing import Dict
 
 
-# Vars
-# - Vars: Static
 SRC_DIR = os.path.dirname(os.path.realpath(__file__))
 PROJECT_DIR = os.path.join(SRC_DIR, '..')
 CONTENT_DIR = os.path.join(PROJECT_DIR, '..', 'content')
 
-# - Vars: Config
-# TODO: customize properly
-FAVORITE_DEFAULTS = {
-    'out_dir': os.path.join(CONTENT_DIR, 'output'),
-    'intermediary_outdir': os.path.join(CONTENT_DIR, 'input'),
-    'include_all_predicates': True,
-    'intermediary_type': 'obographs',
-    'use_cached_intermediaries': True,
-    'retain_intermediaries': True,
-    'convert_intermediaries_only': False,
-}
-# TODO: customize properly
-FAVORITES = OrderedDict({
-    'icd_snomed': {
-        'download_url': None,
-        'input_path': os.path.join(CONTENT_DIR, 'input', 'mondo.owl'),
-        # '_id': '',
-        # 'native_uri_stems': ['http://purl.obolibrary.org/obo/_'],
-    },
-})
+
+def _run_shell_command(command: str, cwd: str = None) -> subprocess.CompletedProcess:
+    """Runs a command in the shell, and handles some common errors"""
+    args = command.split(' ')
+    if cwd:
+        result = subprocess.run(args, capture_output=True, text=True, cwd=cwd)
+    else:
+        result = subprocess.run(args, capture_output=True, text=True)
+    stderr, stdout = result.stderr, result.stdout
+    if stdout and 'error' in stdout or 'ERROR' in stdout:
+        raise RuntimeError(stdout)
+    if stderr:
+        raise RuntimeError(stderr)
+    return result
 
 
-# TODO: customize properly
 def sssom_to_fhir(
-    input_path_or_url: str, out_dir: str = CONTENT_DIR, out_filename: str = None, include_all_predicates=False,
-    retain_intermediaries=False, intermediary_type=['obographs', 'semsql'][0], use_cached_intermediaries=False,
-    intermediary_outdir: str = None, convert_intermediaries_only=False, native_uri_stems: List[str] = None,
-    code_system_id: str = None, code_system_url: str = None, dev_sssom_path: str = None,
-    dev_sssom_interpreter_path: str = None
+    inpath: str, outpath: str, dev_sssom_path: str = None, dev_sssom_interpreter_path: str = None,
 ) -> str:
     """Run conversion"""
-    outpath = ''
+    # Validate args
+    if (dev_sssom_path and not dev_sssom_interpreter_path) or (not dev_sssom_path and dev_sssom_interpreter_path):
+        raise ValueError('If you specify a `dev_sssom_path` or `dev_sssom_interpreter_path`, you must specify both.')
+
+    # Run conversion
+    dev_sssom_path = dev_sssom_path if dev_sssom_path is None or not dev_sssom_path.endswith('sssom-py') \
+        else os.path.join(dev_sssom_path, 'sssom', 'cli.py')
+    cwd = os.path.realpath(os.path.join(os.path.dirname(dev_sssom_path), '..')) if dev_sssom_path else PROJECT_DIR
+    lead_cmd = 'sssom' if not dev_sssom_path else f'{dev_sssom_interpreter_path} {dev_sssom_path}'
+    command = f'{lead_cmd} convert {inpath} --output-format fhir_json --output {outpath}'
+    _run_shell_command(command, cwd=cwd)
+
     return outpath
 
 
-# todo
-# def _run_favorites(
-#     use_cached_intermediaries: bool = None, retain_intermediaries: bool = None, include_all_predicates: bool = None,
-#     intermediary_type: str = None, out_dir: str = None, intermediary_outdir: str = None,
-#     convert_intermediaries_only: bool = None, dev_sssom_path: str = None, dev_sssom_interpreter_path: str = None,
-#     favorites: Dict = FAVORITES
-# ):
-#     """Convert favorite ontologies"""
-#     kwargs = {k: v for k, v in locals().items() if v is not None and not k.startswith('__') and k != 'favorites'}
-#     fails = []
-#     successes = []
-#     n = len(favorites)
-#     i = 0
-#     for d in favorites.values():
-#         i += 1
-#         print('Converting {} of {}: {}'.format(i, n, d['code_system_id']))
-#         try:
-#             sssom_to_fhir(
-#                 out_filename=f'CodeSystem-{d["code_system_id"]}.json',
-#                 input_path_or_url=d['input_path'] if d['input_path'] else d['download_url'], **kwargs)
-#             successes.append(d['id'])
-#         except Exception as e:
-#             fails.append(d['code_system_id'])
-#             print('Failed to convert {}: \n{}'.format(d['code_system_id'], e))
-#     print('SUMMARY')
-#     print('Successes: ' + str(successes))
-#     print('Failures: ' + str(fails))
-
-
-# TODO: customize properly
 def cli():
     """Command line interface."""
     package_description = 'Convert SSSOM to FHIR.'
     parser = ArgumentParser(description=package_description)
-    parser.add_argument('-i', '--input-path-or-url', required=False, help='URL or path to OWL file to convert.')
-    # parser.add_argument(
-    #     '-o', '--out-dir', required=False, default=CONTENT_DIR, help='The directory where results should be saved.')
+    parser.add_argument('-i', '--inpath', required=True, help='Path to input SSSOM TSV.')
+    parser.add_argument('-o', '--outpath', required=True, help='Where FHIR ConceptMap JSON should be saved.')
     parser.add_argument(
-        '-n', '--out-path', required=False, help='Path to create output SSSOM ConceptMap FHIR JSON.')
-    # parser.add_argument(
-    #     '-s', '--code-system-id', required=False, default=False,
-    #     help="For `fhirjson` only. The code system ID to use for identification on the server uploaded to. "
-    #          "See: https://hl7.org/fhir/resource-definitions.html#Resource.id",)
-    # parser.add_argument(
-    #     '-S', '--code-system-url', required=False, default=False,
-    #     help="For `fhirjson` only. Canonical URL for the code system. "
-    #          "See: https://hl7.org/fhir/codesystem-definitions.html#CodeSystem.url",)
-    # parser.add_argument(
-    #     '-u', '--native-uri-stems', required=False, nargs='+',
-    #     help='A comma-separated list of URI stems that will be used to determine whether a concept is native to '
-    #          'the CodeSystem. For example, for OMIM, the following URI stems are native: '
-    #          'https://omim.org/entry/,https://omim.org/phenotypicSeries/PS"'
-    #          'As of 2023-01-15, there is still a bug in the Obographs spec and/or `robot` where certain nodes are not'
-    #          ' being converted. This converter adds back the nodes, but to know which ones belong to the CodeSystem '
-    #          'itself and are not foreign concepts, this parameter is necessary. OAK also makes use of this parameter.'
-    #          ' See also: https://github.com/geneontology/obographs/issues/90')
-    parser.add_argument(
-        '-d', '--dev-sssom-path', default=False, required=False,
+        '-d', '--dev-sssom-path', default=None, required=False,
         help='If you want to use a local development version of SSSOM, specify the path to the OAK directory here. '
              'Must be used with --dev-sssom-interpreter-path.')
     parser.add_argument(
-        '-D', '--dev-sssom-interpreter-path', default=False, required=False,
+        '-D', '--dev-sssom-interpreter-path', default=None, required=False,
         help='If you want to use a local development version of SSSOM, specify the path to the Python interpreter '
              'where its dependencies are installed (i.e. its virtual environment). Must be used with --dev-sssom-path.')
-    # parser.add_argument(
-    #     '-f', '--favorites', action='store_true', default=False, required=False,
-    #     help='If present, will run all favorite ontologies found in `FAVORITES`. If using this option, the '
-    #          'other CLI flags are not relevant. Instead, edit the following config: `FAVORITE_DEFAULTS`.')
 
     d: Dict = vars(parser.parse_args())
-    # if d['favorites']:
-    #     _run_favorites(
-    #         dev_sssom_path=d['dev_sssom_path'], dev_sssom_interpreter_path=d['dev_sssom_interpreter_path'],
-    #         **{**FAVORITE_DEFAULTS, **{'favorites': FAVORITES}})
-    # del d['favorites']
     sssom_to_fhir(**d)
 
 
-# Execution
 if __name__ == '__main__':
     cli()

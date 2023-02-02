@@ -1,4 +1,5 @@
 """"Convert from v2 to v3"""
+import dateutil.parser as dp
 import os
 import yaml
 from typing import Any, Dict, List
@@ -33,18 +34,30 @@ csv_paths: List[str] = [x for x in os.listdir(IN_DIR) if x.endswith('.csv')]
 for path in csv_paths:
     # read
     # _id = path.replace('sssom_mappings_', '').replace('icd10cm.csv', '')
-    df = pd.read_csv(os.path.join(IN_DIR, path), comment='#').fillna('')
+    df = pd.read_csv(os.path.join(IN_DIR, path), comment='#')
     outpath = os.path.join(OUT_DIR, os.path.basename(path).replace('.csv', '.tsv'))
     # drop col
     df = df.drop(columns=['curi_map'])
-    datasets_list.append(df)
+    # drop empty rows
+    df = df.dropna()
+    # reformat dates
+    df['mapping_date'] = df['mapping_date'].apply(lambda x: dp.parse(x).strftime('%Y-%m-%d'))
+    # fix malformatted CURIEs
+    df['object_id'] = df['object_id'].apply(
+        lambda x: x.replace('Cancer Modifier', 'cancer_modifier')
+        .replace('OMOP Extension', 'omop_extension'))
     # todo: sort values?
-    # add comments
+    pass
+    # save & return
+    # - add comments
+    if os.path.exists(outpath):
+        os.remove(outpath)
     f = open(outpath, 'a')
     f.write(metadata_str)
     f.close()
-    # save
+    # - save data & return
     df.to_csv(outpath, index=False, sep='\t', mode='a')
+    datasets_list.append(df)
 
 # Concat, add yaml comment, and save -----------------------------------------------------------------------------------
 # todo: new column 'set name' based on _id above? Ask steph but i dont think needed?
@@ -52,6 +65,8 @@ for path in csv_paths:
 # todo: sort?
 df_all = pd.concat(datasets_list)
 outpath_all = os.path.join(OUT_DIR, 'combined', 'sssom_mappings_icd10cm.tsv')
+if os.path.exists(outpath_all):
+    os.remove(outpath_all)
 f = open(outpath_all, 'a')
 f.write(metadata_str)
 f.close()

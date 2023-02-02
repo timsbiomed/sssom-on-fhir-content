@@ -3,7 +3,10 @@
 
 ### Manual mutations
 ##### metadata.yaml
-1. Created this file based on a intra-row, single cell, somewhat incorrectly formatted metadata within several CSVs, with no differentiation between them. 
+1. Created this file based on a intra-row, single cell, somewhat incorrectly formatted metadata within several CSVs, with no differentiation between them.
+2. Added a `/` to the end of the `semapv` URI stem because sssom-py throws error if it's missing.
+3. added a `#` to the end of `skos` URI stem because sssom-py throws error if it's missing.
+4. Added missing `prefix` to `Cancer Modifier`.
 
 ##### sssom_mappings_177icd10cm.csv
 1. Nothing

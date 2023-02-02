@@ -5,6 +5,8 @@ curie_map:
   ICD10CM: http://purl.bioontology.org/ontology/ICD10CM/
   MP: http://purl.obolibrary.org/obo/MP_
   OMOP: https://athena.ohdsi.org/search-terms/terms/
-  semapv: https://w3id.org/semapv
-  skos: http://www.w3.org/2004/02/skos/core
+  cancer_modifier: https://purl.temporaryfakepurls.org/cancer-modifier/
+  omop_extension: https://purl.temporaryfakepurls.org/omop-extension/
+  semapv: https://w3id.org/semapv/
+  skos: http://www.w3.org/2004/02/skos/core#
 license: http://w3id.org/sssom/license/unspecified
