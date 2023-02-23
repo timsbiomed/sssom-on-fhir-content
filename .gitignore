@@ -34,5 +34,5 @@ backup/
 !*/combined/.keep
 combined/sssom_mappings_icd10cm.tsv
 # These files are just too big. Could use git LFS, but will simply add in the releases for now:
-content/icd_snomed/tsv/v3/combined/sssom_mappings_icd10cm.tsv
-content/icd_snomed/fhir/sssom_mappings_icd10cm.fhir.json
+content/icd10cm_snomed_from_omop/tsv/v4/sssom_mappings_icd10cm.tsv
+content/icd10cm_snomed_from_omop/fhir/sssom_mappings_icd10cm.fhir.json
