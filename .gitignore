@@ -36,3 +36,6 @@ combined/sssom_mappings_icd10cm.tsv
 # These files are just too big. Could use git LFS, but will simply add in the releases for now:
 content/icd10cm_snomed_from_omop/tsv/v4/sssom_mappings_icd10cm.tsv
 content/icd10cm_snomed_from_omop/fhir/sssom_mappings_icd10cm.fhir.json
+content/icd10cm_snomed_from_snomed_complex/fhir/icd_snomed_from_snomed_complex.sssom.fhir.json
+content/icd10cm_snomed_from_snomed_complex/tsv/v1/icd_snomed_from_snomed_complex.sssom.tsv
+content/icd10cm_snomed_from_snomed_complex/tsv/v2/icd_snomed_from_snomed_complex.sssom.tsv
