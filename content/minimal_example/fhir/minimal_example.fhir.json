@@ -1,0 +1,37 @@
+{
+  "resourceType": "ConceptMap",
+  "url": "https://w3id.org/sssom/mappings/fa10c6d4-614c-4762-93e4-782d86eede41",
+  "identifier": [
+    {
+      "system": "https://w3id.org/sssom/mappings/",
+      "value": "https://w3id.org/sssom/mappings/fa10c6d4-614c-4762-93e4-782d86eede41"
+    }
+  ],
+  "name": "fa10c6d4-614c-4762-93e4-782d86eede41",
+  "status": "draft",
+  "experimental": true,
+  "copyright": "http://w3id.org/sssom/license/unspecified",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "ICD10CM:1",
+          "display": "test case",
+          "target": [
+            {
+              "code": "OMOP:1",
+              "display": "Injury caused by animal",
+              "equivalence": "inexact",
+              "extension": [
+                {
+                  "url": "http://example.org/fhir/StructureDefinition/mapping_justification",
+                  "valueString": "semapv:UnspecifiedMatching"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
