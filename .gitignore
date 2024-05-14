@@ -4,6 +4,7 @@ _archive/
 _dev/
 .idea/
 build/
+release/
 dev/
 dist/
 ignored/
@@ -39,3 +40,6 @@ content/icd10cm_snomed_from_omop/fhir/sssom_mappings_icd10cm.fhir.json
 content/icd10cm_snomed_from_snomed_complex/fhir/icd_snomed_from_snomed_complex.sssom.fhir.json
 content/icd10cm_snomed_from_snomed_complex/tsv/v1/icd_snomed_from_snomed_complex.sssom.tsv
 content/icd10cm_snomed_from_snomed_complex/tsv/v2/icd_snomed_from_snomed_complex.sssom.tsv
+content/icd10cm_snomed_from_omop/tsv/v4/icd10cm_snomed_from_omop.sssom.tsv
+content/icd10cm_snomed_from_omop/fhir/icd10cm_snomed_from_omop.fhir.json
+content/icd10cm_snomed_from_snomed_complex/fhir/icd_snomed_from_snomed_complex.fhir.json

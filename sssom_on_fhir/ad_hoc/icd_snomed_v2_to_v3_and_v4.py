@@ -67,7 +67,7 @@ for path in csv_paths:
 # todo: drop duplicates? based on which cols? all?
 # todo: sort?
 df_all = pd.concat(datasets_list)
-outpath_all = os.path.join(OUT_DIR_V4, 'sssom_mappings_icd10cm.tsv')
+outpath_all = os.path.join(OUT_DIR_V4, 'icd10cm_snomed_from_omop.sssom.tsv')
 if os.path.exists(outpath_all):
     os.remove(outpath_all)
 f = open(outpath_all, 'a')
